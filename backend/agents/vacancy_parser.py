@@ -56,6 +56,7 @@ class VacancyParser:
             "django": ["django"],
             "flask": ["flask"],
             "vibecoding": ["vibecode", "vibe coding"],
+<<<<<<< HEAD
             "cursor": ["cursor"],
             "copilot": ["copilot"],
             "ai_agent": ["ai-агент", "ai agent", "агентная система"],
@@ -63,6 +64,27 @@ class VacancyParser:
             "fullstack": ["fullstack", "full-stack", "full stack"],
             "devops": ["devops", "ci/cd"],
             "business": ["бизнес", "воронки", "конверсии", "продукт"],
+=======
+            "ai_agent": ["ai agent", "ai-агент", "multi-agent"],
+            "prompt_engineering": ["prompt engineering", "промпт-инжиниринг"],
+            "vibecoding": ["vibecode", "vibe coding", "vibe"],
+            "cursor": ["cursor"],
+            "claude": ["claude", "claude code"],
+            "copilot": ["copilot", "github copilot"],
+            "ai_agent": ["ai-агент", "ai agent", "мульти-агент", "multi-agent", "агентная система"],
+            "prompt_engineering": ["промпт", "prompt engineering", "промпт-инжиниринг"],
+            "langchain": ["langchain", "lang chain"],
+            "rag": ["rag", "retrieval augmented"],
+            "product_management": ["product management", "продукт", "pm", "управление продуктом"],
+            "business_thinking": ["бизнес-мышление", "business thinking", "бизнес-процессы"],
+            "fullstack": ["fullstack", "full-stack", "full stack"],
+            "fastapi": ["fastapi"],
+            "sql": ["sql", "базы данных"],
+            "api": ["api", "rest api"],
+            "business_thinking": ["бизнес-мышление", "business thinking", "бизнес-процессы", "воронки", "конверсии"],
+            "self_management": ["самостоятельность", "сам декомпозируешь", "без промежуточных менеджеров"],
+            "devops": ["devops", "ci/cd", "деплой"],
+>>>>>>> 34e7c326be1c27cf8154ffefdbe92240341e847c
         }
 
         # Ищем навыки
@@ -93,4 +115,9 @@ class VacancyParser:
         return {
             "skills": found_skills,
             "min_experience": experience,
+<<<<<<< HEAD
         }
+=======
+            "raw_text": full_text[:1000]
+        }
+>>>>>>> 34e7c326be1c27cf8154ffefdbe92240341e847c

@@ -88,7 +88,11 @@ class SkillsExtractor:
         "leadership": ["leadership", "лидерство"],
         "communication": ["communication", "коммуникация"],
         "problem solving": ["problem solving", "решение проблем"],
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 34e7c326be1c27cf8154ffefdbe92240341e847c
         # Доп
         "vibecoding": ["vibecode", "vibe coding", "vibe"],
         "cursor": ["cursor"],
