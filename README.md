@@ -46,8 +46,8 @@ pip install -r requirements.txt
 ```bash 
 cd backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
-Сервер будет доступен по адресу: http://localhost:8000
 ```
+*Сервер будет доступен по адресу: http://localhost:8000*
 
 ### 4. Запуск фронтенда (в отдельном терминале)
 ```bash 
