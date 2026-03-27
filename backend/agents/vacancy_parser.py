@@ -92,6 +92,9 @@ class VacancyParser:
             "fastapi": ["fastapi"],
             "sql": ["sql", "базы данных"],
             "api": ["api", "rest api"],
+            "business_thinking": ["бизнес-мышление", "business thinking", "бизнес-процессы", "воронки", "конверсии"],
+            "self_management": ["самостоятельность", "сам декомпозируешь", "без промежуточных менеджеров"],
+            "devops": ["devops", "ci/cd", "деплой"],
         }
 
         found_skills = set()
