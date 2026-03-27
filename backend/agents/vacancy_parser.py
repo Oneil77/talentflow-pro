@@ -78,6 +78,20 @@ class VacancyParser:
             "vibecoding": ["vibecode", "vibe coding"],
             "ai_agent": ["ai agent", "ai-агент", "multi-agent"],
             "prompt_engineering": ["prompt engineering", "промпт-инжиниринг"],
+            "vibecoding": ["vibecode", "vibe coding", "vibe"],
+            "cursor": ["cursor"],
+            "claude": ["claude", "claude code"],
+            "copilot": ["copilot", "github copilot"],
+            "ai_agent": ["ai-агент", "ai agent", "мульти-агент", "multi-agent", "агентная система"],
+            "prompt_engineering": ["промпт", "prompt engineering", "промпт-инжиниринг"],
+            "langchain": ["langchain", "lang chain"],
+            "rag": ["rag", "retrieval augmented"],
+            "product_management": ["product management", "продукт", "pm", "управление продуктом"],
+            "business_thinking": ["бизнес-мышление", "business thinking", "бизнес-процессы"],
+            "fullstack": ["fullstack", "full-stack", "full stack"],
+            "fastapi": ["fastapi"],
+            "sql": ["sql", "базы данных"],
+            "api": ["api", "rest api"],
         }
 
         found_skills = set()
