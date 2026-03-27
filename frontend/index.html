@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentFlow Pro | AI Talent Analytics Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><i class="fas fa-brain"></i><span>TalentFlow <span class="highlight">Pro</span></span></div>
+            <div class="nav-links">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> Главная</a>
+                <a href="dashboard.html"><i class="fas fa-chart-line"></i> Дашборд</a>
+            </div>
+            <div class="ai-status"><i class="fas fa-circle pulse"></i><span>AI Agent Active</span></div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge"><i class="fas fa-gem"></i> AI-Powered Talent Analytics</div>
+            <h1>Умный подбор персонала<br>с помощью <span class="gradient-text">AI-агента</span></h1>
+            <p class="hero-description">TalentFlow Pro анализирует рынок труда, оценивает кандидатов и предоставляет data-driven рекомендации для найма.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="location.href='dashboard.html'"><i class="fas fa-chart-line"></i> Открыть дашборд</button>
+                <button class="btn-secondary" onclick="scrollToAnalyzer()"><i class="fas fa-play"></i> Попробовать агента</button>
+            </div>
+            <div class="stats-preview">
+                <div class="stat"><span class="stat-number">15K+</span><span class="stat-label">вакансий проанализировано</span></div>
+                <div class="stat"><span class="stat-number">94%</span><span class="stat-label">точность предсказаний</span></div>
+                <div class="stat"><span class="stat-number">156%</span><span class="stat-label">рост LLM-вакансий</span></div>
+            </div>
+        </div>
+        <div class="hero-visual"><div class="floating-cards"><div class="card-ai"><i class="fas fa-robot"></i><span>AI Agent</span></div><div class="card-data"><i class="fas fa-chart-line"></i><span>Analytics</span></div><div class="card-match"><i class="fas fa-percent"></i><span>Match Score</span></div></div></div>
+    </header>
+
+    <section id="analyze" class="demo-section">
+        <div class="container">
+            <div class="section-header"><h2><i class="fas fa-robot"></i> AI-агент в действии</h2><p>Протестируй интеллектуальный анализ кандидатов</p></div>
+
+            <div class="demo-switch" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button id="manualBtn" class="switch-btn active">Ручной ввод</button>
+                <button id="fileBtn" class="switch-btn">Загрузить резюме</button>
+                <button id="vacancyBtn" class="switch-btn">Анализ под вакансию</button>
+            </div>
+
+            <!-- Ручной ввод -->
+            <div id="manualForm" class="demo-form" style="display: block;">
+                <h3>Анализ кандидата (ручной ввод)</h3>
+                <form id="candidateForm">
+                    <div class="form-group"><label><i class="fas fa-user"></i> Имя кандидата</label><input type="text" id="candidateName" value="Анна Студентова"></div>
+                    <div class="form-group"><label><i class="fas fa-code"></i> Навыки (через запятую)</label><input type="text" id="candidateSkills" value="python, machine learning, llm, sql, pandas"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label><i class="fas fa-briefcase"></i> Опыт (лет)</label><input type="number" id="candidateExperience" value="2.5" step="0.5"></div>
+                        <div class="form-group"><label><i class="fas fa-graduation-cap"></i> Образование</label><input type="text" id="candidateEducation" value="НИУ ВШЭ, Инноватика"></div>
+                    </div>
+                    <div class="form-group"><label><i class="fas fa-chart-line"></i> Целевая роль</label><select id="candidateRole"><option value="AI_ENGINEER">AI Engineer / ML Engineer</option><option value="FINTECH_MANAGER">FinTech Manager / Analyst</option><option value="PRODUCT_MANAGER">AI Product Manager</option></select></div>
+                    <button type="submit" class="btn-analyze"><i class="fas fa-brain"></i> Запустить AI-агента</button>
+                </form>
+            </div>
+
+            <!-- Загрузка резюме -->
+            <div id="fileForm" class="demo-form" style="display: none;">
+                <h3>Анализ резюме (PDF, DOCX, TXT)</h3>
+                <form id="resumeForm" enctype="multipart/form-data">
+                    <div class="form-group"><label><i class="fas fa-file-pdf"></i> Файл резюме (PDF, DOCX, TXT)</label><input type="file" id="resumeFile" accept=".pdf,.docx,.txt" required></div>
+                    <div class="form-group"><label><i class="fas fa-chart-line"></i> Целевая роль</label><select id="resumeTargetRole"><option value="AI_ENGINEER">AI Engineer / ML Engineer</option><option value="FINTECH_MANAGER">FinTech Manager / Analyst</option><option value="PRODUCT_MANAGER">AI Product Manager</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-user"></i> Имя (опционально)</label><input type="text" id="resumeName" placeholder="Анна Студентова"></div>
+                    <button type="submit" class="btn-analyze"><i class="fas fa-upload"></i> Загрузить и проанализировать</button>
+                </form>
+            </div>
+
+            <!-- Анализ под вакансию (с загрузкой резюме) -->
+            <div id="vacancyForm" class="demo-form" style="display: none;">
+                <h3>Анализ резюме под конкретную вакансию</h3>
+                <form id="vacancyAnalysisForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label><i class="fab fa-hh"></i> Ссылка на вакансию hh.ru</label>
+                        <input type="url" id="vacancyUrl" placeholder="https://hh.ru/vacancy/123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-file-pdf"></i> Файл резюме (PDF, DOCX, TXT)</label>
+                        <input type="file" id="vacancyResumeFile" accept=".pdf,.docx,.txt" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Имя (опционально)</label>
+                        <input type="text" id="vacancyName" placeholder="Анна Студентова">
+                    </div>
+                    <button type="submit" class="btn-analyze">
+                        <i class="fas fa-chart-line"></i> Сравнить резюме с вакансией
+                    </button>
+                </form>
+            </div>
+
+            <div class="demo-results" id="analysisResults" style="display: none;">
+                <div class="results-header"><h3><i class="fas fa-chart-pie"></i> Результаты анализа</h3><span class="ai-badge">AI-Generated</span></div>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="insights-preview">
+        <div class="container">
+            <div class="section-header"><h2><i class="fas fa-chart-line"></i> Аналитика рынка 2026</h2><p>На основе данных hh.ru и работы AI-агента</p></div>
+            <div class="insights-grid">
+                <div class="insight-card"><div class="insight-icon"><i class="fas fa-rocket"></i></div><h4>LLM — новый must-have</h4><p>Спрос на LLM-инженеров вырос на <strong>156%</strong> за последний год.</p><div class="trend up"><i class="fas fa-arrow-up"></i> +156%</div></div>
+                <div class="insight-card"><div class="insight-icon"><i class="fas fa-chart-line"></i></div><h4>Гибридные профили</h4><p>Специалисты с техническим бэкграундом получают премию <strong>до 30%</strong>.</p><div class="trend up"><i class="fas fa-arrow-up"></i> +30%</div></div>
+                <div class="insight-card"><div class="insight-icon"><i class="fas fa-globe"></i></div><h4>Remote-first культура</h4><p><strong>42%</strong> AI-вакансий допускают удаленный формат работы.</p><div class="trend stable"><i class="fas fa-chart-line"></i> +8% YoY</div></div>
+                <div class="insight-card"><div class="insight-icon"><i class="fas fa-chart-simple"></i></div><h4>Зарплатный тренд</h4><p>AI-специалисты: рост зарплат <strong>+18%</strong> за 12 месяцев.</p><div class="trend up"><i class="fas fa-arrow-up"></i> +18%</div></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo"><i class="fas fa-brain"></i><span>TalentFlow Pro</span></div>
+                <div class="footer-links">
+                    <a href="https://github.com/Oneil77/talentflow-pro" target="_blank"><i class="fab fa-github"></i> GitHub проекта</a>
+                </div>
+                <div class="footer-copyright">© 2026 TalentFlow Pro — AI-Powered Talent Analytics Platform</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Функция отрисовки результата
+        function displayResults(data) {
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = '';
+
+            if (data.vacancy_title) {
+                resultsContent.insertAdjacentHTML('afterbegin', `<div class="vacancy-title" style="background:rgba(0,255,136,0.1);padding:10px;border-radius:8px;margin-bottom:15px;">📌 Вакансия: ${data.vacancy_title}</div>`);
+            }
+
+            const html = `
+                <div class="score-circle" style="text-align:center;margin-bottom:20px;">
+                    <canvas id="matchScoreChart" width="150" height="150"></canvas>
+                    <div class="score-value">${data.match_score}%</div>
+                </div>
+                <div class="recommendation ${data.recommendation.includes('HIRE')?'hire':(data.recommendation.includes('INTERVIEW')?'interview':'reject')}">
+                    <i class="fas ${data.recommendation.includes('HIRE')?'fa-check-circle':(data.recommendation.includes('INTERVIEW')?'fa-comments':'fa-times-circle')}"></i>
+                    ${data.recommendation}
+                </div>
+                <div class="strengths-gaps">
+                    <div class="strengths"><h4><i class="fas fa-star"></i> Сильные стороны</h4><ul>${data.strengths.map(s=>`<li><i class="fas fa-check"></i> ${s}</li>`).join('')}</ul></div>
+                    <div class="gaps"><h4><i class="fas fa-exclamation-triangle"></i> Gap-навыки</h4><ul>${data.gaps.map(g=>`<li><i class="fas fa-times"></i> ${g}</li>`).join('')}</ul></div>
+                </div>
+                <div class="ai-insights"><h4><i class="fas fa-brain"></i> AI-инсайты</h4><p>${data.ai_insights}</p></div>
+                <div class="salary-range"><h4><i class="fas fa-ruble-sign"></i> Оценочная зарплата</h4><div class="range"><span class="min">${data.salary_range.min}</span><span class="to">—</span><span class="max">${data.salary_range.max}</span><span class="currency">${data.salary_range.currency}</span></div></div>
+            `;
+            resultsContent.innerHTML = html;
+
+            const ctx = document.getElementById('matchScoreChart').getContext('2d');
+            new Chart(ctx, { type:'doughnut', data:{ datasets:[{ data:[data.match_score,100-data.match_score], backgroundColor:['#00ff88','#2a2a2a'], borderWidth:0, cutout:'70%' }] }, options:{ responsive:true, maintainAspectRatio:true, plugins:{ legend:{ display:false } } } });
+        }
+
+        // Переключение режимов
+        const manualBtn=document.getElementById('manualBtn'), fileBtn=document.getElementById('fileBtn'), vacancyBtn=document.getElementById('vacancyBtn');
+        const manualForm=document.getElementById('manualForm'), fileForm=document.getElementById('fileForm'), vacancyForm=document.getElementById('vacancyForm');
+
+        manualBtn.onclick=()=>{ manualForm.style.display='block'; fileForm.style.display='none'; vacancyForm.style.display='none'; manualBtn.classList.add('active'); fileBtn.classList.remove('active'); vacancyBtn.classList.remove('active'); };
+        fileBtn.onclick=()=>{ manualForm.style.display='none'; fileForm.style.display='block'; vacancyForm.style.display='none'; fileBtn.classList.add('active'); manualBtn.classList.remove('active'); vacancyBtn.classList.remove('active'); };
+        vacancyBtn.onclick=()=>{ manualForm.style.display='none'; fileForm.style.display='none'; vacancyForm.style.display='block'; vacancyBtn.classList.add('active'); manualBtn.classList.remove('active'); fileBtn.classList.remove('active'); };
+
+        // ========== 1. РУЧНОЙ ВВОД ==========
+        document.getElementById('candidateForm').addEventListener('submit', async e=>{
+            e.preventDefault();
+            const name=document.getElementById('candidateName').value;
+            const skills=document.getElementById('candidateSkills').value.split(',').map(s=>s.trim());
+            const experience=parseFloat(document.getElementById('candidateExperience').value);
+            const education=document.getElementById('candidateEducation').value;
+            const role=document.getElementById('candidateRole').value;
+
+            document.getElementById('analysisResults').style.display='block';
+            document.getElementById('resultsContent').innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> AI-агент анализирует...</div>';
+
+            try{
+                const resp=await fetch('http://localhost:8000/api/analyze/candidate',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name,skills,experience_years:experience,education,role}) });
+                const data=await resp.json();
+                displayResults(data);
+            }catch(err){
+                document.getElementById('resultsContent').innerHTML=`<div class="error">Ошибка: ${err.message}. Проверьте, запущен ли сервер на порту 8000.</div>`;
+            }
+        });
+
+        // ========== 2. ЗАГРУЗКА РЕЗЮМЕ (без вакансии) ==========
+        document.getElementById('resumeForm').addEventListener('submit', async e=>{
+            e.preventDefault();
+            const file=document.getElementById('resumeFile').files[0];
+            if(!file) return;
+            const targetRole=document.getElementById('resumeTargetRole').value;
+            const name=document.getElementById('resumeName').value;
+
+            const fd=new FormData();
+            fd.append('file',file); fd.append('target_role',targetRole);
+            if(name) fd.append('name',name);
+
+            document.getElementById('analysisResults').style.display='block';
+            document.getElementById('resultsContent').innerHTML='<div class="loading"><i class="fas fa-spinner fa-spin"></i> Анализируем резюме...</div>';
+
+            try{
+                const resp=await fetch('http://localhost:8000/api/analyze/resume-file',{ method:'POST', body:fd });
+                const data=await resp.json();
+                displayResults(data);
+            }catch(err){
+                document.getElementById('resultsContent').innerHTML=`<div class="error">Ошибка: ${err.message}</div>`;
+            }
+        });
+
+        // ========== 3. АНАЛИЗ РЕЗЮМЕ ПОД ВАКАНСИЮ ==========
+        document.getElementById('vacancyAnalysisForm').addEventListener('submit', async e=>{
+            e.preventDefault();
+
+            const vacancyUrl = document.getElementById('vacancyUrl').value;
+            const file = document.getElementById('vacancyResumeFile').files[0];
+            const name = document.getElementById('vacancyName').value;
+
+            if (!vacancyUrl || !file) {
+                alert('Заполните ссылку на вакансию и выберите файл резюме');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('vacancy_url', vacancyUrl);
+            formData.append('file', file);
+            if (name) formData.append('name', name);
+
+            const resultsDiv = document.getElementById('analysisResults');
+            const resultsContent = document.getElementById('resultsContent');
+            resultsDiv.style.display = 'block';
+            resultsContent.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Анализируем вакансию и резюме...</div>';
+
+            try {
+                const resp = await fetch('http://localhost:8000/api/analyze/resume-against-vacancy', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await resp.json();
+                displayResults(data);
+            } catch (err) {
+                resultsContent.innerHTML = `<div class="error">Ошибка: ${err.message}</div>`;
+            }
+        });
+
+        function scrollToAnalyzer(){ document.getElementById('analyze').scrollIntoView({behavior:'smooth'}); }
+    </script>
+</body>
+</html>

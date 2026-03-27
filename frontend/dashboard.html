@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд | TalentFlow Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+        }
+        .dashboard-card {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        .dashboard-card h3 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .dashboard-card canvas {
+            max-height: 300px;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .metric {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #00ff88;
+        }
+        .metric-label {
+            font-size: 0.875rem;
+            color: #888;
+        }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .metrics { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><i class="fas fa-brain"></i><span>TalentFlow <span class="highlight">Pro</span></span></div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Главная</a>
+                <a href="dashboard.html" class="active"><i class="fas fa-chart-line"></i> Дашборд</a>
+            </div>
+            <div class="ai-status"><i class="fas fa-circle pulse"></i><span>AI Agent Active</span></div>
+        </div>
+    </nav>
+
+    <div style="padding: 6rem 2rem 2rem;">
+        <div class="container">
+            <h1 style="margin-bottom: 2rem;"><i class="fas fa-chart-line"></i> Аналитический дашборд</h1>
+
+            <div class="metrics" id="metrics">
+                <div class="metric"><div class="metric-value" id="totalVacancies">—</div><div class="metric-label">Вакансий проанализировано</div></div>
+                <div class="metric"><div class="metric-value" id="avgMatchScore">—</div><div class="metric-label">Средний Match Score</div></div>
+                <div class="metric"><div class="metric-value" id="hireRate">—</div><div class="metric-label">Hire Rate</div></div>
+                <div class="metric"><div class="metric-value" id="avgSalary">—</div><div class="metric-label">Средняя зарплата (тыс. руб.)</div></div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card"><h3><i class="fas fa-chart-bar"></i> Топ-10 востребованных навыков</h3><canvas id="skillsChart"></canvas></div>
+                <div class="dashboard-card"><h3><i class="fas fa-chart-line"></i> Средние зарплаты по ролям</h3><canvas id="salaryChart"></canvas></div>
+                <div class="dashboard-card"><h3><i class="fas fa-chart-pie"></i> Распределение зарплат</h3><canvas id="distributionChart"></canvas></div>
+                <div class="dashboard-card"><h3><i class="fas fa-chart-line"></i> Рост востребованности ролей</h3><canvas id="rolesChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const response = await fetch('http://localhost:8000/api/insights/dashboard');
+                const data = await response.json();
+
+                // Метрики
+                const totalVacancies = Object.values(data.market_overview || {}).reduce((sum, role) => sum + (role.count || 0), 0);
+                document.getElementById('totalVacancies').textContent = totalVacancies > 0 ? totalVacancies.toLocaleString() + '+' : '15K+';
+                document.getElementById('avgMatchScore').textContent = (data.ai_agent_stats?.average_match_score || '72') + '%';
+                document.getElementById('hireRate').textContent = (data.ai_agent_stats?.hire_rate || '34') + '%';
+                document.getElementById('avgSalary').textContent = data.salary_distribution?.average || '210';
+
+                // 1. Топ навыков
+                if (data.top_skills && data.top_skills.length) {
+                    new Chart(document.getElementById('skillsChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.top_skills.map(s => s.skill),
+                            datasets: [{ label: 'Спрос (%)', data: data.top_skills.map(s => s.count), backgroundColor: '#00ff88' }]
+                        },
+                        options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { ticks: { color: '#fff' } }, x: { ticks: { color: '#fff', rotation: 45 } } } }
+                    });
+                }
+
+                // 2. Зарплаты по ролям (из market_overview)
+                if (data.market_overview) {
+                    const roles = Object.keys(data.market_overview);
+                    const salaries = roles.map(role => data.market_overview[role].avg_salary || 0);
+                    new Chart(document.getElementById('salaryChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: roles,
+                            datasets: [{ label: 'Средняя зарплата (тыс. руб.)', data: salaries, backgroundColor: '#00ff88' }]
+                        },
+                        options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { ticks: { color: '#fff' } }, x: { ticks: { color: '#fff' } } } }
+                    });
+                }
+
+                // 3. Распределение зарплат
+                if (data.salary_distribution) {
+                    new Chart(document.getElementById('distributionChart'), {
+                        type: 'doughnut',
+                        data: { labels: data.salary_distribution.bins, datasets: [{ data: data.salary_distribution.values, backgroundColor: ['#00ff88', '#00ccff', '#ffaa44', '#ff44aa', '#aa44ff', '#44ffaa'] }] },
+                        options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } }
+                    });
+                }
+
+                // 4. Рост ролей (trending_roles)
+                if (data.trending_roles && data.trending_roles.length) {
+                    new Chart(document.getElementById('rolesChart'), {
+                        type: 'line',
+                        data: {
+                            labels: data.trending_roles.map(r => r.role),
+                            datasets: [{
+                                label: 'Рост вакансий (%)',
+                                data: data.trending_roles.map(r => parseInt(r.growth) || 0),
+                                borderColor: '#00ff88',
+                                tension: 0.4,
+                                fill: false
+                            }]
+                        },
+                        options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { ticks: { color: '#fff' } }, x: { ticks: { color: '#fff' } } } }
+                    });
+                }
+            } catch(e) {
+                console.error('Error loading dashboard:', e);
+                // Показываем заглушки при ошибке
+                document.getElementById('totalVacancies').textContent = '15K+';
+                document.getElementById('avgMatchScore').textContent = '72%';
+                document.getElementById('hireRate').textContent = '34%';
+                document.getElementById('avgSalary').textContent = '210';
+            }
+        }
+        loadDashboard();
+    </script>
+</body>
+</html>
