@@ -1,5 +1,5 @@
 """
-Vacancy Parser — умный парсинг вакансий с hh.ru
+Vacancy Parser — упрощённый парсинг вакансий
 """
 
 import requests
@@ -24,82 +24,60 @@ class VacancyParser:
             return ""
         clean = re.sub(r'<[^>]+>', ' ', text)
         clean = re.sub(r'\s+', ' ', clean)
-        return clean.strip()
+        return clean.lower()
 
     @staticmethod
     def extract_requirements(vacancy: Dict) -> Dict:
-        """
-        Умное извлечение требований из вакансии
-        """
+        """Извлекает требования из вакансии"""
+
         # Собираем весь текст
         description = vacancy.get("description", "")
         requirement_snippet = vacancy.get("snippet", {}).get("requirement", "")
-        full_text = VacancyParser.clean_html(description + " " + requirement_snippet).lower()
+        full_text = VacancyParser.clean_html(description + " " + requirement_snippet)
 
-        # ========== ИЗВЛЕЧЕНИЕ НАВЫКОВ ==========
-        # Все возможные навыки (большой словарь)
-        all_skills = {
-            "python": ["python", "питон", "django", "flask"],
-            "javascript": ["javascript", "js", "node.js", "react", "vue", "angular"],
-            "typescript": ["typescript", "ts"],
-            "java": ["java", "spring"],
-            "c++": ["c++", "cpp"],
-            "c#": ["c#", "c sharp"],
-            "go": ["go", "golang"],
-            "rust": ["rust"],
-            "php": ["php"],
-            "sql": ["sql", "postgresql", "mysql", "oracle"],
-            "machine learning": ["machine learning", "ml", "машинное обучение", "нейросети", "нейронные сети",
-                                 "data science"],
-            "llm": ["llm", "large language model", "языковые модели", "gpt", "chatgpt", "claude", "bert"],
-            "rag": ["rag", "retrieval augmented"],
-            "langchain": ["langchain", "lang chain"],
+        # Список навыков для поиска (ключевые слова)
+        skill_keywords = {
+            "python": ["python"],
+            "machine learning": ["machine learning", "машинное обучение", "ml", "нейросети", "нейронные сети"],
+            "llm": ["llm", "large language model", "языковые модели", "gpt", "chatgpt", "claude"],
+            "ai": ["ai", "ии", "искусственный интеллект"],
+            "rag": ["rag", "retrieval"],
+            "langchain": ["langchain"],
             "pytorch": ["pytorch", "torch"],
             "tensorflow": ["tensorflow", "tf"],
+            "sql": ["sql", "базы данных"],
             "docker": ["docker"],
             "kubernetes": ["kubernetes", "k8s"],
-            "aws": ["aws", "amazon web services", "ec2", "s3"],
-            "gcp": ["gcp", "google cloud"],
-            "azure": ["azure"],
-            "react": ["react", "react.js"],
-            "vue": ["vue", "vue.js"],
-            "angular": ["angular"],
+            "react": ["react"],
+            "javascript": ["javascript", "js"],
             "html": ["html", "css"],
+            "api": ["api", "rest api"],
             "fastapi": ["fastapi"],
             "django": ["django"],
             "flask": ["flask"],
-            "api": ["api", "rest api", "graphql"],
-            "product management": ["product management", "продукт", "pm"],
-            "agile": ["agile", "scrum", "kanban"],
-            "devops": ["devops", "ci/cd", "jenkins"],
-            "cursor": ["cursor"],
-            "claude": ["claude", "claude code"],
-            "copilot": ["copilot", "github copilot"],
             "vibecoding": ["vibecode", "vibe coding"],
-            "ai_agent": ["ai agent", "ai-агент", "multi-agent"],
-            "prompt_engineering": ["prompt engineering", "промпт-инжиниринг"],
+            "cursor": ["cursor"],
+            "copilot": ["copilot"],
+            "ai_agent": ["ai-агент", "ai agent", "агентная система"],
+            "prompt_engineering": ["промпт", "prompt engineering"],
+            "fullstack": ["fullstack", "full-stack", "full stack"],
+            "devops": ["devops", "ci/cd"],
+            "business": ["бизнес", "воронки", "конверсии", "продукт"],
         }
 
-        found_skills = set()
-        for skill, keywords in all_skills.items():
-            for kw in keywords:
-                if kw in full_text:
-                    found_skills.add(skill)
+        # Ищем навыки
+        found_skills = []
+        for skill, keywords in skill_keywords.items():
+            for keyword in keywords:
+                if keyword in full_text:
+                    found_skills.append(skill)
                     break
 
-        # Специальные проверки
-        if "ai" in full_text or "ии" in full_text or "искусственный интеллект" in full_text:
-            found_skills.add("ai")
-        if "нейросет" in full_text:
-            found_skills.add("machine learning")
-
-        # ========== ИЗВЛЕЧЕНИЕ ОПЫТА ==========
+        # Извлекаем опыт
         experience = 0
         exp_patterns = [
             r'опыт работы от (\d+) лет',
             r'опыт (\d+)[+\-]?\s*лет',
-            r'experience (\d+)\+?\s*years',
-            r'требуемый опыт (\d+)',
             r'от (\d+) лет',
             r'(\d+)\+ лет',
         ]
@@ -109,13 +87,10 @@ class VacancyParser:
                 experience = int(match.group(1))
                 break
 
-        # Проверка на диапазон
-        range_match = re.search(r'(\d+)\s*[-–]\s*(\d+)\s*лет', full_text)
-        if range_match and experience == 0:
-            experience = int(range_match.group(1))
+        print(f"[DEBUG] Найдено навыков в вакансии: {found_skills}")  # для отладки
+        print(f"[DEBUG] Найден опыт: {experience} лет")
 
         return {
-            "skills": list(found_skills),
+            "skills": found_skills,
             "min_experience": experience,
-            "raw_text": full_text[:1000]
         }

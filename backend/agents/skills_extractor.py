@@ -88,6 +88,22 @@ class SkillsExtractor:
         "leadership": ["leadership", "лидерство"],
         "communication": ["communication", "коммуникация"],
         "problem solving": ["problem solving", "решение проблем"],
+
+        # Доп
+        "vibecoding": ["vibecode", "vibe coding", "vibe"],
+        "cursor": ["cursor"],
+        "claude": ["claude", "claude code", "chatgpt"],
+        "copilot": ["copilot", "github copilot"],
+        "ai_agent": ["ai-агент", "ai agent", "мульти-агент", "multi-agent"],
+        "prompt_engineering": ["промпт", "prompt engineering"],
+        "langchain": ["langchain", "lang chain"],
+        "rag": ["rag", "retrieval augmented"],
+        "genetic_algorithms": ["genetic algorithms", "генетические алгоритмы"],
+        "unity": ["unity", "unreal engine"],
+        "yolo": ["yolo", "yolov8", "fasterrcnn", "resnet"],
+        "ar_vr": ["ar", "vr", "augmented reality", "virtual reality"],
+        "business_management": ["ип", "предприниматель", "бизнес-процессы", "управление"],
+        "neural_networks": ["нейронные сети", "neural networks", "нейросети"],
     }
 
     def extract_from_text(self, text: str) -> Dict[str, Any]:

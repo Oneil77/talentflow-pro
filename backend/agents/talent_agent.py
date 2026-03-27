@@ -5,6 +5,7 @@ TalentFlow AI Agent — расширенная аналитика
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
+
 class TalentFlowAgent:
     def __init__(self):
         self.analyses_history = []
@@ -157,33 +158,49 @@ class TalentFlowAgent:
                                           candidate_education: str,
                                           vacancy_requirements: Dict) -> Dict:
         """
-        Анализирует кандидата относительно требований вакансии
+        Анализирует кандидата относительно требований вакансии.
+        vacancy_requirements должен содержать:
+            - skills: список требуемых навыков
+            - min_experience: минимальный опыт (лет)
         """
         required_skills = vacancy_requirements.get("skills", [])
         min_exp = vacancy_requirements.get("min_experience", 0)
 
-        # Сравниваем навыки (регистронезависимо)
         candidate_skills_lower = [s.lower() for s in candidate_skills]
         required_skills_lower = [s.lower() for s in required_skills]
 
-        matched = sum(1 for s in required_skills_lower if s in candidate_skills_lower)
+        # Умное сравнение навыков (с учётом частичных совпадений)
+        matched = 0
+        for req_skill in required_skills_lower:
+            found = False
+            for cand_skill in candidate_skills_lower:
+                if req_skill in cand_skill or cand_skill in req_skill:
+                    found = True
+                    break
+            if found:
+                matched += 1
+
         skill_score = (matched / max(1, len(required_skills))) * 100
 
         # Опыт
         if min_exp > 0:
             exp_score = min(100, (candidate_experience / min_exp) * 100)
         else:
-            exp_score = 70  # если не указан опыт
+            exp_score = 70
 
         final_score = (skill_score * 0.7) + (exp_score * 0.3)
 
         strengths = []
         gaps = []
-        for skill in required_skills:
-            if skill.lower() in candidate_skills_lower:
-                strengths.append(f"Владение {skill}")
-            else:
-                gaps.append(f"Требуется {skill}")
+        for req_skill in required_skills:
+            found = False
+            for cand_skill in candidate_skills:
+                if req_skill.lower() in cand_skill.lower() or cand_skill.lower() in req_skill.lower():
+                    strengths.append(f"Владение {req_skill}")
+                    found = True
+                    break
+            if not found:
+                gaps.append(f"Требуется {req_skill}")
 
         if candidate_experience < min_exp and min_exp > 0:
             gaps.append(f"Недостаточно опыта (нужно {min_exp} лет)")
@@ -213,9 +230,9 @@ class TalentFlowAgent:
 
     def _generate_radar_data(self, skills: List[str], role: str) -> Dict:
         """Генерирует данные для radar chart"""
-        tech_skills = ["python", "docker", "kubernetes", "java", "c++"]
-        business_skills = ["product management", "agile", "scrum"]
-        ai_skills = ["machine learning", "llm", "pytorch", "tensorflow", "nlp"]
+        tech_skills = ["python", "docker", "kubernetes", "java", "c++", "fastapi", "sql"]
+        business_skills = ["product management", "agile", "scrum", "business", "management"]
+        ai_skills = ["machine learning", "llm", "pytorch", "tensorflow", "nlp", "rag", "langchain"]
         data_skills = ["sql", "pandas", "spark", "tableau"]
 
         technical_score = min(100, sum(20 for s in skills if s in tech_skills))
@@ -241,7 +258,8 @@ class TalentFlowAgent:
         score_factor = 0.7 + (match_score / 100) * 0.6
         adjusted_min = int(min_salary * exp_factor * score_factor)
         adjusted_max = int(max_salary * exp_factor * score_factor)
-        return {"min": adjusted_min, "max": adjusted_max, "currency": "тыс. руб./год", "percentile_50": (adjusted_min + adjusted_max) // 2}
+        return {"min": adjusted_min, "max": adjusted_max, "currency": "тыс. руб./год",
+                "percentile_50": (adjusted_min + adjusted_max) // 2}
 
     def get_stats(self) -> Dict:
         if not self.analyses_history:
@@ -250,5 +268,6 @@ class TalentFlowAgent:
         return {
             "total_analyses": len(self.analyses_history),
             "average_match_score": round(sum(scores) / len(scores), 1),
-            "hire_rate": round(sum(1 for a in self.analyses_history if "HIRE" in a["recommendation"]) / len(self.analyses_history) * 100, 1)
+            "hire_rate": round(sum(1 for a in self.analyses_history if "HIRE" in a["recommendation"]) / len(
+                self.analyses_history) * 100, 1)
         }
