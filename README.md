@@ -1,4 +1,4 @@
-# 🚀 TalentFlow Pro — AI-агент для подбора персонала
+# 🚀 TalentFlow Pro — AI-агент для умного подбора специалистов
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green.svg)](https://fastapi.tiangolo.com/)
